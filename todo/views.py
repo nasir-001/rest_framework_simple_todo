@@ -7,6 +7,8 @@ from rest_framework.response import Response
 from .serializers import TaskSerializer
 from .models import Task
 
+from drf_yasg.utils import swagger_auto_schema
+
 # Create your views here.
 
 @api_view(['GET'])
@@ -34,6 +36,7 @@ def taskDetail(request, pk):
     return Response(serializer.data)
 
 
+@swagger_auto_schema(method='post', request_body=TaskSerializer, responses={404: 'todo not added'})
 @api_view(['POST'])
 def taskCreate(request):
     serializer = TaskSerializer(data=request.data)
@@ -41,7 +44,7 @@ def taskCreate(request):
         serializer.save()
     return Response(serializer.data)
 
-
+@swagger_auto_schema(method='post', request_body=TaskSerializer, responses={404: 'todo not added'})
 @api_view(['POST'])
 def taskUpdate(request, pk):
     task = Task.objects.get(id=pk)
@@ -51,3 +54,11 @@ def taskUpdate(request, pk):
         serializer.save()
 
     return Response(serializer.data)
+
+
+@api_view(['DELETE'])
+def taskDelete(request, pk):
+    task = Task.objects.get(id=pk)
+    task.delete()
+
+    return Response('todo successfully deleted')
